@@ -1,254 +1,150 @@
--- Services
-local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+-- // UI FRAME //
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local StartButton = Instance.new("TextButton")
+local StatusLabel = Instance.new("TextLabel")
+local TitleLabel = Instance.new("TextLabel")
+local MinimizeButton = Instance.new("TextButton")
 
--- Player
-local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
+-- // Parent UI ke player //
+ScreenGui.Parent = game:GetService("CoreGui")
+Frame.Parent = ScreenGui
+StartButton.Parent = Frame
+StatusLabel.Parent = Frame
+TitleLabel.Parent = Frame
+MinimizeButton.Parent = Frame
 
--- Create ScreenGui
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "ZedlistGui"
-screenGui.ResetOnSpawn = false
-screenGui.Parent = playerGui
+-- // Desain UI //
+Frame.Size = UDim2.new(0, 200, 0, 150)
+Frame.Position = UDim2.new(0, 10, 0, 10)
+Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Frame.Active = true
+Frame.Draggable = true
 
--- Create MainFrame
-local mainFrame = Instance.new("Frame")
-mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 300, 0, 400)
-mainFrame.Position = UDim2.new(0.5, -150, 0.5, -200)
-mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-mainFrame.BorderSizePixel = 0
-mainFrame.Parent = screenGui
+TitleLabel.Size = UDim2.new(1, 0, 0, 30)
+TitleLabel.Position = UDim2.new(0, 0, 0, 0)
+TitleLabel.Text = "Zedlist"
+TitleLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.TextScaled = true
 
--- Make MainFrame draggable
-mainFrame.Active = true
-mainFrame.Draggable = true
+StartButton.Size = UDim2.new(0, 180, 0, 40)
+StartButton.Position = UDim2.new(0, 10, 0, 40)
+StartButton.Text = "Start Script"
+StartButton.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+StartButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 
--- Title Label
-local titleLabel = Instance.new("TextLabel")
-titleLabel.Name = "TitleLabel"
-titleLabel.Size = UDim2.new(1, 0, 0, 40)
-titleLabel.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-titleLabel.BorderSizePixel = 0
-titleLabel.Text = "Zedlist Cultivation Script"
-titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-titleLabel.Font = Enum.Font.SourceSansBold
-titleLabel.TextSize = 20
-titleLabel.Parent = mainFrame
+StatusLabel.Size = UDim2.new(0, 180, 0, 40)
+StatusLabel.Position = UDim2.new(0, 10, 0, 90)
+StatusLabel.Text = "Status: Idle"
+StatusLabel.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 
--- Close Button
-local closeButton = Instance.new("TextButton")
-closeButton.Name = "CloseButton"
-closeButton.Size = UDim2.new(0, 40, 0, 40)
-closeButton.Position = UDim2.new(1, -40, 0, 0)
-closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-closeButton.BorderSizePixel = 0
-closeButton.Text = "X"
-closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeButton.Font = Enum.Font.SourceSansBold
-closeButton.TextSize = 20
-closeButton.Parent = mainFrame
+MinimizeButton.Size = UDim2.new(0, 30, 0, 30)
+MinimizeButton.Position = UDim2.new(1, -40, 0, 0)
+MinimizeButton.Text = "-"
+MinimizeButton.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+MinimizeButton.TextColor3 = Color3.fromRGB(0, 0, 0)
 
--- Input Fields
-local inputLabels = {
-    "Delay sebelum beli item 1 (detik)",
-    "Delay sebelum ganti map (detik)",
-    "Delay sebelum beli item 2 (detik)",
-    "Durasi Comprehend (detik)",
-    "Durasi UpdateQi sesudahnya (detik)"
-}
-
-local inputBoxes = {}
-
-for i, labelText in ipairs(inputLabels) do
-    local yPosition = 50 + (i - 1) * 50
-
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0, 200, 0, 25)
-    label.Position = UDim2.new(0, 10, 0, yPosition)
-    label.BackgroundTransparency = 1
-    label.Text = labelText
-    label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    label.Font = Enum.Font.SourceSans
-    label.TextSize = 14
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.Parent = mainFrame
-
-    local textBox = Instance.new("TextBox")
-    textBox.Size = UDim2.new(0, 80, 0, 25)
-    textBox.Position = UDim2.new(0, 210, 0, yPosition)
-    textBox.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    textBox.BorderSizePixel = 0
-    textBox.Text = "60"
-    textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-    textBox.Font = Enum.Font.SourceSans
-    textBox.TextSize = 14
-    textBox.ClearTextOnFocus = false
-    textBox.Parent = mainFrame
-
-    table.insert(inputBoxes, textBox)
+-- // Fungsi tunggu //
+local function waitSeconds(sec)
+	local start = tick()
+	while tick() - start < sec do wait() end
 end
 
--- Start Button
-local startButton = Instance.new("TextButton")
-startButton.Name = "StartButton"
-startButton.Size = UDim2.new(0, 130, 0, 40)
-startButton.Position = UDim2.new(0, 10, 1, -90)
-startButton.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
-startButton.BorderSizePixel = 0
-startButton.Text = "▶ Start"
-startButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-startButton.Font = Enum.Font.SourceSansBold
-startButton.TextSize = 20
-startButton.Parent = mainFrame
-
--- Stop Button
-local stopButton = Instance.new("TextButton")
-stopButton.Name = "StopButton"
-stopButton.Size = UDim2.new(0, 130, 0, 40)
-stopButton.Position = UDim2.new(0, 160, 1, -90)
-stopButton.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
-stopButton.BorderSizePixel = 0
-stopButton.Text = "■ Stop"
-stopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-stopButton.Font = Enum.Font.SourceSansBold
-stopButton.TextSize = 20
-stopButton.Parent = mainFrame
-
--- Status Label
-local statusLabel = Instance.new("TextLabel")
-statusLabel.Name = "StatusLabel"
-statusLabel.Size = UDim2.new(1, -20, 0, 30)
-statusLabel.Position = UDim2.new(0, 10, 1, -40)
-statusLabel.BackgroundTransparency = 1
-statusLabel.Text = "Status: Idle"
-statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-statusLabel.Font = Enum.Font.SourceSans
-statusLabel.TextSize = 14
-statusLabel.TextXAlignment = Enum.TextXAlignment.Left
-statusLabel.Parent = mainFrame
-
--- Toggle Button
-local toggleButton = Instance.new("TextButton")
-toggleButton.Name = "ToggleButton"
-toggleButton.Size = UDim2.new(0, 100, 0, 40)
-toggleButton.Position = UDim2.new(0, 10, 0, 10)
-toggleButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-toggleButton.BorderSizePixel = 0
-toggleButton.Text = "Open Menu"
-toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggleButton.Font = Enum.Font.SourceSansBold
-toggleButton.TextSize = 14
-toggleButton.Visible = false
-toggleButton.Parent = screenGui
-
--- Function to update status
-local function updateStatus(text)
-    statusLabel.Text = "Status: " .. text
-end
-
--- Function to wait for a certain number of seconds
-local function waitSeconds(seconds)
-    local start = tick()
-    while tick() - start < seconds do
-        wait()
-    end
-end
-
--- Main script execution
-local running = false
-local stopUpdateQi = false
-
+-- // Fungsi utama //
 local function runCycle()
-    while running do
-        updateStatus("Reincarnating")
-        ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("Reincarnate"):FireServer({})
+	local function updateStatus(text)
+		StatusLabel.Text = "Status: " .. text
+	end
 
-        -- Infinite loop process
-        spawn(function()
-            while running do
-                ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("IncreaseAptitude"):FireServer({})
-                ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("Mine"):FireServer({})
-                wait()
-            end
-        end)
+	updateStatus("Reincarnating")
+	game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents", 9e9):WaitForChild("Reincarnate", 9e9):FireServer({})
 
-        -- Update Qi Loop
-        stopUpdateQi = false
-        spawn(function()
-            while running and not stopUpdateQi do
-                ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("UpdateQi"):FireServer({})
-                wait(1)
-            end
-        end)
+	spawn(function()
+		while true do
+			local args = {}
+			game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents", 9e9):WaitForChild("IncreaseAptitude", 9e9):FireServer(args)
+			game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents", 9e9):WaitForChild("Mine", 9e9):FireServer(args)
+			wait()
+		end
+	end)
 
-        -- Delay sebelum beli item pertama
-        waitSeconds(tonumber(inputBoxes[1].Text))
+	local stopUpdateQi = false
+	spawn(function()
+		while not stopUpdateQi do
+			local args = {}
+			game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents", 9e9):WaitForChild("UpdateQi", 9e9):FireServer(args)
+			wait(1)
+		end
+	end)
 
-        updateStatus("Buying Item Batch 1")
-        for _, item in ipairs({
-            "Nine Heavens Galaxy Water",
-            "Buzhou Divine Flower",
-            "Fusang Divine Tree",
-            "Calm Cultivation Mat"
-        }) do
-            ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("BuyItem"):FireServer({item})
-        end
+	waitSeconds(60)
+	local item1 = {
+		"Nine Heavens Galaxy Water",
+		"Buzhou Divine Flower",
+		"Fusang Divine Tree",
+		"Calm Cultivation Mat"
+	}
+	for _, item in ipairs(item1) do
+		game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents", 9e9):WaitForChild("BuyItem", 9e9):FireServer({item})
+	end
 
-        -- Delay sebelum ganti map
-        waitSeconds(tonumber(inputBoxes[2].Text))
+	waitSeconds(30)
+	local function changeMap(name)
+		game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents", 9e9):WaitForChild("AreaEvents", 9e9):WaitForChild("ChangeMap", 9e9):FireServer({name})
+	end
+	changeMap("immortal")
+	changeMap("chaos")
 
-        updateStatus("Changing Map")
-        local function changeMap(name)
-            ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("AreaEvents"):WaitForChild("ChangeMap"):FireServer({name})
-        end
-        changeMap("immortal")
-        changeMap("chaos")
+	updateStatus("Chaotic Road")
+	game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents", 9e9):WaitForChild("AreaEvents", 9e9):WaitForChild("ChaoticRoad", 9e9):FireServer({})
 
-        updateStatus("Chaotic Road")
-        ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("AreaEvents"):WaitForChild("ChaoticRoad"):FireServer({})
+	updateStatus("Preparing Items")
+	waitSeconds(60)
+	local item2 = {
+		"Traceless Breeze Lotus",
+		"Reincarnation World Destruction Black Lotus",
+		"Ten Thousand Bodhi Tree"
+	}
+	for _, item in ipairs(item2) do
+		game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents", 9e9):WaitForChild("BuyItem", 9e9):FireServer({item})
+	end
 
-        -- Delay sebelum beli item kedua
-        waitSeconds(tonumber(inputBoxes[3].Text))
+	changeMap("immortal")
+	game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents", 9e9):WaitForChild("AreaEvents", 9e9):WaitForChild("HiddenRemote", 9e9):FireServer({})
 
-        updateStatus("Buying Item Batch 2")
-        for _, item in ipairs({
-            "Traceless Breeze Lotus",
-            "Reincarnation World Destruction Black Lotus",
-            "Ten Thousand Bodhi Tree"
-        }) do
-            ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("BuyItem"):FireServer({item})
-        end
+	waitSeconds(60)
+	game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents", 9e9):WaitForChild("AreaEvents", 9e9):WaitForChild("ForbiddenZone", 9e9):FireServer({})
 
-        updateStatus("Returning to Immortal")
-        changeMap("immortal")
+	updateStatus("Comprehending")
+	stopUpdateQi = true
+	local start = tick()
+	while tick() - start < 120 do
+		game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents", 9e9):WaitForChild("Comprehend", 9e9):FireServer({})
+		wait()
+	end
 
-        updateStatus("Hidden Remote")
-        ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("AreaEvents"):WaitForChild("HiddenRemote"):FireServer({})
+	updateStatus("Final UpdateQi")
+	stopUpdateQi = false
+	waitSeconds(120)
+	stopUpdateQi = true
 
-        waitSeconds(60)
-
-        updateStatus("Entering Forbidden Zone")
-        ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("AreaEvents"):WaitForChild("ForbiddenZone"):FireServer({})
-
-        -- Comprehend
-        updateStatus("Comprehending")
-        stopUpdateQi = true
-        local startTime = tick()
-        while tick() - startTime < tonumber(inputBoxes[4].Text) do
-            if not running then return end
-            ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("Comprehend"):FireServer({})
-            wait()
-        end
-
-        -- UpdateQi again
-        updateStatus("Final UpdateQi")
-        stopUpdateQi = false
-        waitSeconds(tonumber(inputBoxes[5].Text))
-        stopUpdateQi = true
-
-        updateStatus("Cycle Complete - Restarting")
-    end
+	updateStatus("Cycle Done - Restarting")
 end
+
+-- // Jalankan saat tombol ditekan //
+StartButton.MouseButton1Click:Connect(function()
+	spawn(function()
+		while true do
+			runCycle()
+		end
+	end)
+	StartButton.Text = "Running..."
+	StartButton.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
+end)
+
+-- // Fungsi untuk meminimalkan UI //
+MinimizeButton.MouseButton1Click:Connect(function()
+	Frame.Visible = not Frame.Visible
+end)
