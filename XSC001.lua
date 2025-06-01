@@ -4,7 +4,7 @@ local frame = Instance.new("Frame", gui)
 frame.Position = UDim2.new(0.5, -125, 0.5, -175) -- Pusatkan frame
 frame.Size = UDim2.new(0, 250, 0, 350)
 frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-frame.Visible = false -- Awalnya tidak terlihat
+frame.Visible = true -- Tampilkan frame saat skrip berjalan
 
 -- Fungsi untuk membuat label
 local function createLabel(text, y)
@@ -18,56 +18,66 @@ local function createLabel(text, y)
     return label
 end
 
--- Fungsi untuk membuat kotak input
-local function createBox(default, y)
-    local box = Instance.new("TextBox", frame)
-    box.Position = UDim2.new(0, 10, 0, y)
-    box.Size = UDim2.new(0, 230, 0, 25)
-    box.Text = tostring(default)
-    box.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    box.TextColor3 = Color3.new(1, 1, 1)
-    box.ClearTextOnFocus = false
-    return box
-end
+-- Fungsi untuk membuat tombol input
+local function createInputButton(default, y, callback)
+    local button = Instance.new("TextButton", frame)
+    button.Position = UDim2.new(0, 10, 0, y)
+    button.Size = UDim2.new(0, 230, 0, 25)
+    button.Text = tostring(default)
+    button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    button.TextColor3 = Color3.new(1, 1, 1)
 
--- Tombol untuk membuka dan menutup UI
-local toggleBtn = Instance.new("TextButton", gui)
-toggleBtn.Position = UDim2.new(0, 20, 0, 20)
-toggleBtn.Size = UDim2.new(0, 100, 0, 30)
-toggleBtn.Text = "Toggle Menu"
-toggleBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
-toggleBtn.TextColor3 = Color3.new(1, 1, 1)
+    button.MouseButton1Click:Connect(function()
+        callback(button)
+    end)
+
+    return button
+end
 
 -- Menambahkan nama Zedlist
 createLabel("Zedlist", 0)
 
--- Event untuk toggle UI
-toggleBtn.MouseButton1Click:Connect(function()
-    frame.Visible = not frame.Visible
+-- Input fields
+createLabel("Delay beli item 1", 30)
+local delayItem1Button = createInputButton("60 detik", 50, function(btn)
+    -- Logika untuk mengubah delay item 1
+    btn.Text = "Delay diubah"
 end)
 
--- Input fields
-createLabel("Delay sebelum beli item 1 (detik)", 30)
-local delayItem1Box = createBox(60, 50)
-createLabel("Delay sebelum ganti map (detik)", 80)
-local delayChangeMapBox = createBox(30, 100)
-createLabel("Delay sebelum beli item 2 (detik)", 130)
-local delayItem2Box = createBox(60, 150)
-createLabel("Durasi Comprehend (detik)", 180)
-local comprehendBox = createBox(120, 200)
-createLabel("Durasi UpdateQi sesudahnya (detik)", 230)
-local updateQiAfterBox = createBox(120, 250)
+createLabel("Delay ganti map", 80)
+local delayChangeMapButton = createInputButton("30 detik", 100, function(btn)
+    -- Logika untuk mengubah delay ganti map
+    btn.Text = "Delay diubah"
+end)
+
+createLabel("Delay beli item 2", 130)
+local delayItem2Button = createInputButton("60 detik", 150, function(btn)
+    -- Logika untuk mengubah delay item 2
+    btn.Text = "Delay diubah"
+end)
+
+createLabel("Durasi Comprehend", 180)
+local comprehendButton = createInputButton("120 detik", 200, function(btn)
+    -- Logika untuk mengubah durasi comprehend
+    btn.Text = "Durasi diubah"
+end)
+
+createLabel("Durasi UpdateQi", 230)
+local updateQiAfterButton = createInputButton("120 detik", 250, function(btn)
+    -- Logika untuk mengubah durasi update Qi
+    btn.Text = "Durasi diubah"
+end)
 
 -- Tombol Start dan Stop
 local startBtn = Instance.new("TextButton", frame)
-startBtn.Position = UDim2.new(0, 10, 0, 270)
+startBtn.Position = UDim2.new(0, 10, 0, 290)
 startBtn.Size = UDim2.new(0, 110, 0, 30)
 startBtn.Text = "▶ Start"
 startBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
 startBtn.TextColor3 = Color3.new(1, 1, 1)
 
 local stopBtn = Instance.new("TextButton", frame)
-stopBtn.Position = UDim2.new(0, 130, 0, 270)
+stopBtn.Position = UDim2.new(0, 130, 0, 290)
 stopBtn.Size = UDim2.new(0, 110, 0, 30)
 stopBtn.Text = "■ Stop"
 stopBtn.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
@@ -75,7 +85,7 @@ stopBtn.TextColor3 = Color3.new(1, 1, 1)
 
 -- Status Label
 local statusLabel = Instance.new("TextLabel", frame)
-statusLabel.Position = UDim2.new(0, 10, 0, 310)
+statusLabel.Position = UDim2.new(0, 10, 0, 320)
 statusLabel.Size = UDim2.new(0, 230, 0, 30)
 statusLabel.Text = "Status: Idle"
 statusLabel.BackgroundTransparency = 1
@@ -83,21 +93,11 @@ statusLabel.TextColor3 = Color3.new(1, 1, 1)
 
 -- Control flags
 local running = false
-local stopUpdateQi = false
 
 -- Helper functions
-local function waitSeconds(seconds)
-	local start = tick()
-	while tick() - start < seconds do
-		if not running then return end
-		wait()
-	end
-end
-
 local function updateStatus(txt)
-	statusLabel.Text = "Status: " .. txt
+    statusLabel.Text = "Status: " .. txt
 end
-
 -- Main logic
 local function runCycle()
 	while running do
